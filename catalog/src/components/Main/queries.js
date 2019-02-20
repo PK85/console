@@ -14,10 +14,15 @@ const serviceClassesQGL = `
 
 export const SERVICE_CLASSES_QUERY = gql`
   query serviceClasses($namespace: String!) {
-    clusterServiceClasses {
+    serviceClasses(namespace: $namespace) {
       ${serviceClassesQGL}
     }
-    serviceClasses(namespace: $namespace) {
+  }
+`;
+
+export const CLUSTER_SERVICE_CLASSES_QUERY = gql`
+  query clusterServiceClasses {
+    clusterServiceClasses {
       ${serviceClassesQGL}
     }
   }

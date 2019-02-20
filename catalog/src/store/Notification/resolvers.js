@@ -24,6 +24,7 @@ const resolvers = {
               color
               icon
               visible
+              classClusterWide
             }
           }
         `,

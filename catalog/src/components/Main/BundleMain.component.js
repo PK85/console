@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { ThemeWrapper } from '@kyma-project/react-components';
 
-import ServiceClassList from '../ServiceClassList/ServiceClassList.container';
+import ServiceClassList from '../ServiceClassList/BundleServiceClassList.container';
 
 import { MainWrapper } from './styled';
 

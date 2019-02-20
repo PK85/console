@@ -9,6 +9,7 @@ export const GET_NOTIFICATION = gql`
       visible
       type
       instanceName
+      classClusterWide
     }
   }
 `;

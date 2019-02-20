@@ -20,7 +20,7 @@ build:
 
 scan:
 	sed -i -e 's/APIKEY/$(API_KEY)/g; s/USERKEY/$(USER_KEY)/g' /whitesource.config.json && cp /whitesource.config.json ./whitesource.config.json
-	whitesource run
+	whitesource rundocker
 
 build-image:
 	docker build -t $(IMG_NAME) .

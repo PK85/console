@@ -43,19 +43,19 @@ export class ServiceInstancesTable extends Component {
   goToServiceCatalog = () => {
     LuigiClient.linkManager()
       .fromContext('namespaces')
-      .navigate(`cmf-service-catalog`);
+      .navigate(`cmf-bundle-catalog`);
   };
 
   goToServiceClassDetails = name => {
     LuigiClient.linkManager()
       .fromContext('namespaces')
-      .navigate(`cmf-service-catalog/details/${name}`);
+      .navigate(`cmf-bundle-catalog/details/${name}`);
   };
 
   goToServiceInstanceDetails = name => {
     LuigiClient.linkManager()
       .fromContext('namespaces')
-      .navigate(`cmf-instances/details/${name}`);
+      .navigate(`cmf-bundle-instances/details/${name}`);
   };
 
   render() {
@@ -211,6 +211,7 @@ export class ServiceInstancesTable extends Component {
       <Button
         compact
         option="light"
+        // (instance.clusterServiceClass ? `bundle` : 'service')
         onClick={this.goToServiceCatalog}
         data-e2e-id="add-instance"
       >
@@ -218,7 +219,7 @@ export class ServiceInstancesTable extends Component {
       </Button>
     );
 
-    const title = 'Manage Service Instances';
+    const title = 'Manage Bundle Instances';
     const tableData = createTableData();
 
     let headers = [

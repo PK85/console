@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
-import { Separator, Modal } from '@kyma-project/react-components';
+import { Modal, Separator } from '@kyma-project/react-components';
 import LuigiClient from '@kyma-project/luigi-client';
 
 import BasicData from './BasicData.component';
@@ -161,6 +161,7 @@ class CreateInstanceModal extends Component {
             color: '#359c46',
             icon: '\uE05B',
             instanceName: variables.name,
+            classClusterWide: variables.classClusterWide,
           },
         });
       }

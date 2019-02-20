@@ -1,0 +1,48 @@
+import React from 'react';
+import { graphql, compose } from 'react-apollo';
+
+import { CLUSTER_SERVICE_CLASSES_QUERY } from './queries';
+import {
+  FILTER_CLUSTER_SERVICE_CLASS_MUTATION,
+  SET_ACTIVE_FILTERS_MUTATION,
+} from './mutations';
+
+import builder from '../../commons/builder';
+
+import MainPage from './BundleMain.component';
+
+export default compose(
+  graphql(CLUSTER_SERVICE_CLASSES_QUERY, {
+    name: 'serviceClasses',
+    options: () => {
+      return {
+        fetchPolicy: 'cache-and-network',
+        errorPolicy: 'all',
+        variables: {
+          namespace: builder.getCurrentEnvironmentId(),
+        },
+      };
+    },
+  }),
+  graphql(FILTER_CLUSTER_SERVICE_CLASS_MUTATION, {
+    name: 'filterClasses',
+    options: () => {
+      return {
+        variables: {
+          namespace: builder.getCurrentEnvironmentId(),
+        },
+      };
+    },
+  }),
+  graphql(SET_ACTIVE_FILTERS_MUTATION, {
+    name: 'setActiveFilters',
+  }),
+)(props => (
+  <MainPage
+    {...props}
+    filterClassesAndSetActiveFilters={(key, value) => {
+      props.setActiveFilters({ variables: { key, value } });
+      props.filterClasses();
+    }}
+  />
+));

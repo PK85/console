@@ -1,29 +1,27 @@
 import React from 'react';
-import { graphql, compose } from 'react-apollo';
+import { compose, graphql } from 'react-apollo';
 
 import {
   ACTIVE_FILTERS_QUERY,
   ALL_FILTERS_QUERY,
-  FILTERED_ITEMS_QUERY,
   ALL_ITEMS_QUERY,
+  FILTERED_ITEMS_QUERY,
 } from './queries';
 import {
   FILTER_INSTANCES_MUTATION,
-  SET_ACTIVE_FILTERS_MUTATION,
   SERVICE_INSTANCES_DELETE_MUTATION,
+  SET_ACTIVE_FILTERS_MUTATION,
 } from './mutations';
 
-import ServiceInstances from './ServiceInstances.component';
+import ServiceInstances from './BundleServiceInstances.component';
 
 import builder from '../../commons/builder';
 
 const ServiceInstanceContainer = props => {
-  console.log('test', props);
-
   const allItems = {
     ...props.allItems,
     serviceInstances: props.allItems.serviceInstances.filter(
-      item => item.serviceClass,
+      item => item.clusterServiceClass,
     ),
   };
 

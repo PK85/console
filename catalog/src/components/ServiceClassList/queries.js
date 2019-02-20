@@ -30,6 +30,20 @@ export const CLASS_FILTERS_QUERY = gql`
   }
 `;
 
+export const CLUSTER_CLASS_FILTERS_QUERY = gql`
+  query serviceClassFilters {
+    clusterServiceClassFilters @client {
+      name
+      isMore
+      values @client {
+        name
+        value
+        count
+      }
+    }
+  }
+`;
+
 export const CLASS_ACTIVE_FILTERS_QUERY = gql`
   query activeServiceClassFilters {
     activeServiceClassFilters @client {

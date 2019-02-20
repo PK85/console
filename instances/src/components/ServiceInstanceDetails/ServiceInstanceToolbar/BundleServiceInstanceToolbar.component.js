@@ -23,7 +23,7 @@ const ServiceInstanceToolbar = ({
   const goToServiceInstances = () => {
     LuigiClient.linkManager()
       .fromContext('namespaces')
-      .navigate(`cmf-instances`);
+      .navigate(`cmf-bundle-instances`);
   };
 
   const instanceClass =
@@ -37,7 +37,7 @@ const ServiceInstanceToolbar = ({
       title={
         <ServiceInstanceToolbarHeadline>
           <ServiceInstanceToolbarHeadlineLink onClick={goToServiceInstances}>
-            Service Instances
+            Bundle Instances
           </ServiceInstanceToolbarHeadlineLink>{' '}
           / {serviceInstance.name}
         </ServiceInstanceToolbarHeadline>

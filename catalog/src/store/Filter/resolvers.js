@@ -7,30 +7,54 @@ export default {
   Query: {
     serviceClassFilters: (_, args, { cache }) => {
       const serviceClassesFilterDataQGL = `
-        name
-        providerDisplayName
-        tags
-        labels
-      `;
+                name
+                providerDisplayName
+                tags
+                labels
+              `;
       try {
         let result = cache.readQuery({
           query: gql`
-              query serviceClassesFilterData($namespace: String!) {
-                clusterServiceClasses {
-                  ${serviceClassesFilterDataQGL}
-                }
-                serviceClasses(namespace: $namespace) {
-                  ${serviceClassesFilterDataQGL}
-                }
-              }
-            `,
+                      query serviceClassesFilterData($namespace: String!) {
+                        serviceClasses(namespace: $namespace) {
+                          ${serviceClassesFilterDataQGL}
+                        }
+                      }
+                    `,
           variables: {
             namespace: builder.getCurrentEnvironmentId(),
           },
         });
         result =
           result && Object.keys(result).length
-            ? [...result.clusterServiceClasses, ...result.serviceClasses]
+            ? [...result.serviceClasses]
+            : [];
+
+        return populateServiceClassFilters(result);
+      } catch (error) {
+        return;
+      }
+    },
+    clusterServiceClassFilters: (_, args, { cache }) => {
+      const serviceClassesFilterDataQGL = `
+                name
+                providerDisplayName
+                tags
+                labels
+              `;
+      try {
+        let result = cache.readQuery({
+          query: gql`
+                      query serviceClassesFilterData($namespace: String!) {
+                        clusterServiceClasses {
+                          ${serviceClassesFilterDataQGL}
+                        }
+                      }
+                    `,
+        });
+        result =
+          result && Object.keys(result).length
+            ? [...result.clusterServiceClasses]
             : [];
 
         return populateServiceClassFilters(result);
@@ -96,30 +120,30 @@ export default {
     },
     setActiveTagsFilters: (_, args, { cache }) => {
       const activeTagsFiltersQGL = `
-        first
-        isMore
-        offset
-      `;
+                first
+                isMore
+                offset
+              `;
       const filters = cache.readQuery({
         query: gql`
-          query activeTagsFilters {
-            activeTagsFilters @client {
-              basic {
-                ${activeTagsFiltersQGL}
-              }
-              provider {
-                ${activeTagsFiltersQGL}
-              }
-              tag {
-                ${activeTagsFiltersQGL}
-              }
-              connectedApplication {
-                ${activeTagsFiltersQGL}
-              }
-              search
-            }
-          }
-        `,
+                  query activeTagsFilters {
+                    activeTagsFilters @client {
+                      basic {
+                        ${activeTagsFiltersQGL}
+                      }
+                      provider {
+                        ${activeTagsFiltersQGL}
+                      }
+                      tag {
+                        ${activeTagsFiltersQGL}
+                      }
+                      connectedApplication {
+                        ${activeTagsFiltersQGL}
+                      }
+                      search
+                    }
+                  }
+                `,
       }).activeTagsFilters;
 
       const newActive = { ...filters };
@@ -149,10 +173,10 @@ export default {
       }).activeServiceClassFilters;
 
       const activeTagsFiltersQGL = `
-        first
-        isMore
-        offset
-      `;
+                first
+                isMore
+                offset
+              `;
       const activeTagsFilters = cache.readQuery({
         query: gql`
           query activeTagsFilters {
@@ -188,22 +212,109 @@ export default {
       `;
       let classes = cache.readQuery({
         query: gql`
-          query serviceClasses($namespace: String!) {
-            clusterServiceClasses {
-              ${serviceClassesQGL}
-            }
-            serviceClasses(namespace: $namespace) {
-              ${serviceClassesQGL}
-            }
-          }
-        `,
+                  query serviceClasses($namespace: String!) {
+                    serviceClasses(namespace: $namespace) {
+                      ${serviceClassesQGL}
+                    }
+                  }
+                `,
         variables: {
           namespace: args.namespace,
         },
       });
       classes =
         classes && Object.keys(classes).length
-          ? [...classes.clusterServiceClasses, ...classes.serviceClasses]
+          ? [...classes.serviceClasses]
+          : [];
+
+      let filteredClasses = filterServiceClasses(classes, activeFilters, cache);
+      const filteredFilters = populateServiceClassFilters(
+        classes,
+        filteredClasses,
+        activeTagsFilters,
+      );
+      filteredClasses = filteredClasses.map(filteredClass => {
+        // delete filteredClass.labels;
+        return filteredClass;
+      });
+
+      cache.writeData({
+        data: {
+          serviceClassFilters: filteredFilters,
+          filteredServiceClasses: filteredClasses,
+        },
+      });
+
+      return filteredClasses;
+    },
+    filterClusterServiceClasses: (_, args, { cache }) => {
+      const activeFilters = cache.readQuery({
+        query: gql`
+          query activeServiceClassFilters {
+            activeServiceClassFilters @client {
+              basic
+              provider
+              tag
+              connectedApplication
+              search
+            }
+          }
+        `,
+      }).activeServiceClassFilters;
+
+      const activeTagsFiltersQGL = `
+        first
+        isMore
+        offset
+      `;
+      const activeTagsFilters = cache.readQuery({
+        query: gql`
+                  query activeTagsFilters {
+                    activeTagsFilters @client {
+                      basic {
+                        ${activeTagsFiltersQGL}
+                      }
+                      provider {
+                        ${activeTagsFiltersQGL}
+                      }
+                      tag {
+                        ${activeTagsFiltersQGL}
+                      }
+                      connectedApplication {
+                        ${activeTagsFiltersQGL}
+                      }
+                      search
+                    }
+                  }
+                `,
+      }).activeTagsFilters;
+
+      const serviceClassesQGL = `
+                name
+                description
+                displayName
+                externalName
+                imageUrl
+                activated
+                providerDisplayName
+                tags
+                labels
+              `;
+      let classes = cache.readQuery({
+        query: gql`
+                  query serviceClasses($namespace: String!) {
+                    clusterServiceClasses {
+                      ${serviceClassesQGL}
+                    }
+                  }
+                `,
+        variables: {
+          namespace: args.namespace,
+        },
+      });
+      classes =
+        classes && Object.keys(classes).length
+          ? [...classes.clusterServiceClasses]
           : [];
 
       let filteredClasses = filterServiceClasses(classes, activeFilters, cache);

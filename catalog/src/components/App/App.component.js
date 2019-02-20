@@ -1,10 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Switch, Route } from 'react-router-dom';
-import { Modal, Notification, BackendModuleDisabled } from '@kyma-project/react-components';
+import {
+  Modal,
+  Notification,
+  BackendModuleDisabled,
+} from '@kyma-project/react-components';
 import LuigiClient from '@kyma-project/luigi-client';
 
 import MainPage from '../Main/Main.container';
+import MainPageBundle from '../Main/BundleMain.container';
 import InstanceDetails from '../ServiceClassDetails/ServiceClassDetails.container';
 
 import { NotificationLink } from './styled';
@@ -41,10 +46,10 @@ class App extends React.Component {
     this.props.clearNotification();
   };
 
-  goToServiceInstanceDetails = name => {
+  goToServiceInstanceDetails = (name, clusterWide) => {
     LuigiClient.linkManager()
       .fromContext('namespaces')
-      .navigate(`cmf-instances/details/${name}`);
+      .navigate(`cmf${clusterWide ? `-bundle` : ''}-instances/details/${name}`);
   };
 
   render() {
@@ -63,7 +68,10 @@ class App extends React.Component {
               <NotificationLink
                 data-e2e-id={`notification-${notification.type}`}
                 onClick={() => {
-                  this.goToServiceInstanceDetails(notification.instanceName);
+                  this.goToServiceInstanceDetails(
+                    notification.instanceName,
+                    notification.classClusterWide,
+                  );
                 }}
               >
                 {notification.title}
@@ -73,10 +81,16 @@ class App extends React.Component {
           />
         )}
         <div className="ph3 pv1 background-gray">
-          {backendModuleExists("servicecatalog") ? (
+          {backendModuleExists('servicecatalog') ? (
             <Switch>
               <Route exact path="/" component={MainPage} />
               <Route exact path="/details/:name" component={InstanceDetails} />
+              <Route exact path="/bundle" component={MainPageBundle} />
+              <Route
+                exact
+                path="/bundle/details/:name"
+                component={InstanceDetails}
+              />
             </Switch>
           ) : (
             <BackendModuleDisabled mod="Service Catalog" />
